@@ -1,0 +1,57 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<!--    <item-->
+<!--        android:id="@+id/bOrder"-->
+<!--        android:title="Order"-->
+<!--        android:icon="@android:drawable/ic_menu_sort_by_size"-->
+<!--        app:showAsAction="ifRoom">-->
+<!--        <menu>-->
+<!--            <group android:checkableBehavior="single">-->
+<!--                <item-->
+<!--                    android:id="@+id/rbTitleAZ"-->
+<!--                    android:title="Titel (A-Z)"-->
+<!--                    android:checked="true"-->
+<!--                    app:showAsAction="never" />-->
+<!--                <item-->
+<!--                    android:id="@+id/rbTitleZA"-->
+<!--                    android:title="Titel (Z-A)"-->
+<!--                    android:checked="false"-->
+<!--                    app:showAsAction="never" />-->
+<!--                <item-->
+<!--                    android:id="@+id/rbAuthorAZ"-->
+<!--                    android:title="Auteur (A-Z)"-->
+<!--                    android:checked="false"-->
+<!--                    app:showAsAction="never" />-->
+<!--                <item-->
+<!--                    android:id="@+id/rbAuthorZA"-->
+<!--                    android:title="Auteur (Z-A)"-->
+<!--                    android:checked="false"-->
+<!--                    app:showAsAction="never" />-->
+<!--                <item-->
+<!--                    android:id="@+id/rbSerieAZ"-->
+<!--                    android:title="Serie (A-Z)"-->
+<!--                    android:checked="false"-->
+<!--                    app:showAsAction="never" />-->
+<!--                <item-->
+<!--                    android:id="@+id/rbSerieZA"-->
+<!--                    android:title="Serie (Z-A)"-->
+<!--                    android:checked="false"-->
+<!--                    app:showAsAction="never" />-->
+<!--            </group>-->
+<!--        </menu>-->
+<!--    </item>-->
+    <item
+        android:id="@+id/bSearch"
+        android:title="Search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom"
+        app:actionViewClass="android.widget.SearchView"/>
+
+<!--    <item-->
+<!--        android:id="@+id/bExport"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="Exporteren"-->
+<!--        app:showAsAction="never" />-->
+</menu>
