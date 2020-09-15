@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -25,6 +27,7 @@ import com.wykon.bookworm.modules.Genre;
 import com.wykon.bookworm.modules.Serie;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,9 @@ public class EditBookActivity extends AppCompatActivity {
     private RatingBar rbRating;
     private EditText etUrl;
     private EditText etDescription;
+
+    private String lastSelectedSerie;
+    private String lastSelectedGenre;
 
     private final String NOT_SELECTED = "Not selected";
     private final String CREATE_NEW = "Create new";
@@ -83,6 +89,50 @@ public class EditBookActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.etDescription);
         loadSpinners();
 
+        sSerie.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedSerie = (String) sSerie.getItemAtPosition(position);
+                if(!CREATE_NEW.equals(selectedSerie)) {
+                    lastSelectedSerie = selectedSerie;
+
+                    if(NOT_SELECTED.equals(selectedSerie)) {
+                        cbSerieCompleted.setVisibility(View.GONE);
+                    }
+                    else {
+                        Serie serie = mSeries.get(selectedSerie);
+                        cbSerieCompleted.setVisibility(View.VISIBLE);
+                        cbSerieCompleted.setChecked(serie.isCompleted());
+                    }
+                    return;
+                }
+
+                createNewSerieDialog();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        sGenre.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedGenre = (String) sGenre.getItemAtPosition(position);
+                if(!CREATE_NEW.equals(selectedGenre)) {
+                    lastSelectedGenre = selectedGenre;
+                    return;
+                }
+
+                createNewGenreDialog();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         mBook = new Book();
 
         Intent mIntent = getIntent();
@@ -94,22 +144,24 @@ public class EditBookActivity extends AppCompatActivity {
 
     public void loadSpinners() {
         mSerieValues = new ArrayList<String>();
-        mSerieValues.add(NOT_SELECTED);
         for(Serie serie : mSeries.values()) {
             mSerieValues.add(serie.getName());
         }
-//        mSerieValues.add(CREATE_NEW);
+        Collections.sort(mSerieValues);
+        mSerieValues.add(0, NOT_SELECTED);
+        mSerieValues.add(CREATE_NEW);
 
         ArrayAdapter<String> seriesAdapter = new ArrayAdapter<>(mContext, R.layout.simple_spinner_item, mSerieValues);
         seriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sSerie.setAdapter(seriesAdapter);
 
         mGenreValues = new ArrayList<>();
-        mGenreValues.add(NOT_SELECTED);
         for(Genre genre : mGenres.values()) {
             mGenreValues.add(genre.getName());
         }
-//        mGenreValues.add(CREATE_NEW);
+        Collections.sort(mGenreValues);
+        mGenreValues.add(0, NOT_SELECTED);
+        mGenreValues.add(CREATE_NEW);
 
         ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(mContext, R.layout.simple_spinner_item, mGenreValues);
         genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -126,19 +178,23 @@ public class EditBookActivity extends AppCompatActivity {
             etAuthorFirstName.setText(mBook.getAuthorFirstName());
         }
 
-        sSerie.setSelection(mSerieValues.indexOf(NOT_SELECTED));
+        lastSelectedSerie = NOT_SELECTED;
+        sSerie.setSelection(mSerieValues.indexOf(lastSelectedSerie));
         cbSerieCompleted.setVisibility(View.GONE);
         if (mBook.getSerie() != null) {
-            sSerie.setSelection(mSerieValues.indexOf(mBook.getSerie().getName()));
+            lastSelectedSerie = mBook.getSerie().getName();
+            sSerie.setSelection(mSerieValues.indexOf(lastSelectedSerie));
 
             etBookNumber.setText(String.format("%.1f", mBook.getBookNumber()));
             cbSerieCompleted.setVisibility(View.VISIBLE);
             cbSerieCompleted.setChecked(mBook.getSerie().isCompleted());
         }
 
-        sGenre.setSelection(mGenreValues.indexOf(NOT_SELECTED));
+        lastSelectedGenre = NOT_SELECTED;
+        sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
         if (mBook.getGenre() != null) {
-            sGenre.setSelection(mGenreValues.indexOf(mBook.getGenre().getName()));
+            lastSelectedGenre = mBook.getGenre().getName();
+            sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
         }
 
         etUrl.setText("");
@@ -194,12 +250,12 @@ public class EditBookActivity extends AppCompatActivity {
             mBook.setUrl(etUrl.getText().toString());
         }
 
-        String selected_serie = (String) sSerie.getSelectedItem();
-        if(NOT_SELECTED.equals(selected_serie)) {
+        String selectedSerie = (String) sSerie.getSelectedItem();
+        if(NOT_SELECTED.equals(selectedSerie)) {
             mBook.setSerie(null);
         }
         else {
-            mBook.setSerie(mSeries.get(selected_serie));
+            mBook.setSerie(mSeries.get(selectedSerie));
         }
 
         String selected_genre = (String) sGenre.getSelectedItem();
@@ -210,8 +266,9 @@ public class EditBookActivity extends AppCompatActivity {
             mBook.setGenre(mGenres.get(selected_genre));
         }
 
-        mBook.save(mDatabaseConnection);
-        finish();
+        if(mBook.save(mContext, mDatabaseConnection)) {
+            finish();
+        }
     }
 
     @Override
@@ -263,5 +320,115 @@ public class EditBookActivity extends AppCompatActivity {
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void createNewGenreDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("New genre");
+        // I'm using fragment here so I'm using getView() to provide ViewGroup
+        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        View myView = layoutInflater.inflate(R.layout.dialog_new_genre, null);
+        builder.setView(myView);
+
+        // Set up the buttons
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                EditText etNewGenre = ((AlertDialog) dialog).findViewById(R.id.etNewGenre);
+
+                Boolean newGenreCreated = createNewGenre(etNewGenre.getText().toString());
+                if(newGenreCreated)
+                    dialog.dismiss();
+            }
+        });
+
+    }
+
+    public Boolean createNewGenre(String name) {
+        Genre newGenre = new Genre();
+        newGenre.setName(name);
+        if(!newGenre.save(mContext, mDatabaseConnection)) {
+            return false;
+        }
+
+        mGenres.put(newGenre.getName(), newGenre);
+        loadSpinners();
+        sGenre.setSelection(mGenreValues.indexOf(newGenre.getName()));
+        return true;
+    }
+
+    public void createNewSerieDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("New serie");
+        // I'm using fragment here so I'm using getView() to provide ViewGroup
+        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+        View myView = layoutInflater.inflate(R.layout.dialog_new_serie, null);
+        builder.setView(myView);
+
+        // Set up the buttons
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sSerie.setSelection(mSerieValues.indexOf(lastSelectedSerie));
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                EditText etNewSerie = ((AlertDialog) dialog).findViewById(R.id.etNewSerie);
+                CheckBox cbCompleted = ((AlertDialog) dialog).findViewById(R.id.cbCompleted);
+
+                Boolean newSerieCreated = createNewSerie(etNewSerie.getText().toString(), cbCompleted.isChecked());
+                if(newSerieCreated)
+                    dialog.dismiss();
+            }
+        });
+
+    }
+
+    public Boolean createNewSerie(String name, Boolean completed) {
+        Serie newSerie = new Serie();
+        newSerie.setName(name);
+        newSerie.setComplete(completed);
+        if(!newSerie.save(mContext, mDatabaseConnection)) {
+            return false;
+        }
+
+        mSeries.put(newSerie.getName(), newSerie);
+        loadSpinners();
+        sSerie.setSelection(mSerieValues.indexOf(newSerie.getName()));
+        return true;
     }
 }

@@ -1,6 +1,8 @@
 package com.wykon.bookworm.modules;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteStatement;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -8,7 +10,7 @@ import androidx.annotation.Nullable;
  * Created by WykonGoar on 11-09-2020.
  */
 
-public class Book {
+public class Book implements Comparable{
 
     // Required
     private Integer mId = -1;
@@ -98,11 +100,11 @@ public class Book {
     }
 
     public void setAuthorLastName(String lastName) {
-        this.mAuthorLastName = lastName;
+        this.mAuthorLastName = lastName.trim();
     }
 
     public void setTitle(String title) {
-        this.mTitle = title;
+        this.mTitle = title.trim();
     }
 
     public void setRating(float rating) {
@@ -114,14 +116,23 @@ public class Book {
     }
 
     public void setAuthorFirstName(@Nullable String firstName) {
+        if (firstName != null) {
+            firstName = firstName.trim();
+        }
         this.mAuthorFirstName = firstName;
     }
 
     public void setDescription(@Nullable String description) {
+        if (description != null) {
+            description = description.trim();
+        }
         this.mDescription = description;
     }
 
     public void setUrl(@Nullable String url) {
+        if (url != null) {
+            url = url.trim();
+        }
         this.mUrl = url;
     }
 
@@ -133,13 +144,19 @@ public class Book {
         this.mGenre = genre;
     }
 
-    public void save(DatabaseConnection databaseConnection) {
+    public boolean save(Context context, DatabaseConnection databaseConnection) {
+        if (databaseConnection.bookExists(mTitle, mAuthorLastName, mId)) {
+            Toast.makeText(context, "Book of author already exists", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if (mId == -1) {
             insertBook(databaseConnection);
         }
         else {
             updateBook(databaseConnection);
         }
+        return true;
     }
 
     public void delete(DatabaseConnection databaseConnection) {
@@ -265,5 +282,10 @@ public class Book {
         }
 
         databaseConnection.executeUpdateQuery(statement);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return mTitle.compareTo(((Book) o).getTitle()) ;
     }
 }
