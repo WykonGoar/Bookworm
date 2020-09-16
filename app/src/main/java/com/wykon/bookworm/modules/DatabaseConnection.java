@@ -204,6 +204,41 @@ public class DatabaseConnection extends Activity {
         return genres;
     }
 
+    public Boolean genreExists(String name, int currentId) {
+        String query = String.format("SELECT COUNT(_id) AS count FROM genres WHERE LOWER(name) = '%s';", name.toLowerCase());
+        if (-1 != currentId) {
+            query = String.format("SELECT COUNT(_id) AS count FROM genres WHERE LOWER(name) = '%s' AND _id != %d; ", name.toLowerCase(), currentId);
+        }
+
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        mCursor.moveToFirst();
+        int count = mCursor.getInt(mCursor.getColumnIndex("count"));
+
+        return count != 0;
+    }
+
+    public Boolean isGenreUsed(int genreId) {
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(String.format("SELECT COUNT(_id) AS count FROM books where genre = %d;", genreId));
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        mCursor.moveToFirst();
+        int count = mCursor.getInt(mCursor.getColumnIndex("count"));
+
+        return count != 0;
+    }
+
     public LinkedList<Serie> getSeries(){
         Cursor mCursor = null;
         try {
@@ -233,6 +268,41 @@ public class DatabaseConnection extends Activity {
         return series;
     }
 
+    public Boolean serieExists(String name, int currentId) {
+        String query = String.format("SELECT COUNT(_id) AS count FROM series WHERE LOWER(name) = '%s';", name.toLowerCase());
+        if (-1 != currentId) {
+            query = String.format("SELECT COUNT(_id) AS count FROM series WHERE LOWER(name) = '%s' AND _id != %d; ", name.toLowerCase(), currentId);
+        }
+
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        mCursor.moveToFirst();
+        int count = mCursor.getInt(mCursor.getColumnIndex("count"));
+
+        return count != 0;
+    }
+
+    public Boolean isSerieUsed(int serieId) {
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(String.format("SELECT COUNT(_id) AS count FROM books where serie = %d;", serieId));
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        mCursor.moveToFirst();
+        int count = mCursor.getInt(mCursor.getColumnIndex("count"));
+
+        return count != 0;
+    }
+
     public LinkedList<Book> getBooks() {
         return _getBooks(-1);
     }
@@ -241,7 +311,7 @@ public class DatabaseConnection extends Activity {
         LinkedList<Book> books = _getBooks(bookId);
 
         if(books.size() == 0) {
-            throw new IndexOutOfBoundsException("Book with id '" + bookId + "' not found.");
+            throw new IndexOutOfBoundsException(String.format("Book with id '%d' not found.", bookId));
         }
 
         return books.getFirst();
@@ -250,11 +320,10 @@ public class DatabaseConnection extends Activity {
     public LinkedList<Book> _getBooks(int bookId) {
         Cursor mCursor = null;
 
-        String query = "SELECT * FROM books";
+        String query = "SELECT * FROM books ORDER BY title";
         if (bookId != -1) {
-            query += " WHERE _id = " + bookId;
+            query = String.format("SELECT * FROM books WHERE _id = %d ORDER BY LOWER(title)", bookId);
         }
-        query += " ORDER BY title";
 
         try {
             mCursor = executeReturn(query);
@@ -309,6 +378,26 @@ public class DatabaseConnection extends Activity {
 
         mDatabase.close();
         return books;
+    }
+
+    public Boolean bookExists(String name, String authorLastName, int currentId) {
+        String query = String.format("SELECT COUNT(_id) AS count FROM books WHERE LOWER(title) = '%s' AND LOWER(author_last_name) = '%s';", name.toLowerCase(), authorLastName.toLowerCase());
+        if (-1 != currentId) {
+            query = String.format("SELECT COUNT(_id) AS count FROM books WHERE LOWER(title) = '%s' AND LOWER(author_last_name) = '%s' AND _id != %d; ", name.toLowerCase(), authorLastName.toLowerCase(), currentId);
+        }
+
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        mCursor.moveToFirst();
+        int count = mCursor.getInt(mCursor.getColumnIndex("count"));
+
+        return count != 0;
     }
 }
 
