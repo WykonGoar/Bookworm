@@ -364,6 +364,11 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
     public Boolean createNewGenre(String name) {
+        if (name.trim().isEmpty()) {
+            Toast.makeText(mContext, "Genre can not be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         Genre newGenre = new Genre();
         newGenre.setName(name);
         if(!newGenre.save(mContext, mDatabaseConnection)) {
@@ -419,6 +424,11 @@ public class EditBookActivity extends AppCompatActivity {
     }
 
     public Boolean createNewSerie(String name, Boolean completed) {
+        if (name.trim().isEmpty()) {
+            Toast.makeText(mContext, "Serie can not be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         Serie newSerie = new Serie();
         newSerie.setName(name);
         newSerie.setComplete(completed);
