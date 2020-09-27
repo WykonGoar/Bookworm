@@ -138,33 +138,53 @@
                 app:layout_constraintTop_toBottomOf="@id/lBookNumber" />
 
             <TextView
-                android:id="@+id/lGenre"
+                android:id="@+id/lGenres"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Genre:"
+                android:text="Genres:"
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etBookNumber" />
 
-            <Spinner
-                android:id="@+id/sGenre"
+            <ImageButton
+                android:id="@+id/ibEditGenres"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:layout_constraintBottom_toTopOf="@id/tvGenres"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_edit" />
+
+            <TextView
+                android:id="@+id/tvGenres"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lGenre" />
+                app:layout_constraintTop_toBottomOf="@id/lGenres" />
+
+            <TextView
+                android:id="@+id/lRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Rating:"
+                android:textColor="@color/design_default_color_on_secondary"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvGenres" />
 
             <RatingBar
                 android:id="@+id/rbRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:numStars="5"
                 android:stepSize="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sGenre" />
+                app:layout_constraintTop_toBottomOf="@id/lRating" />
 
             <TextView
                 android:id="@+id/lUrl"

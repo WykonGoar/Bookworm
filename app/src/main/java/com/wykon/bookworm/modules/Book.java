@@ -1,10 +1,17 @@
 package com.wykon.bookworm.modules;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by WykonGoar on 11-09-2020.
@@ -24,7 +31,7 @@ public class Book implements Comparable{
     private String mDescription = null;
     private String mUrl = null;
     private Serie mSerie = null;
-    private Genre mGenre = null;
+    private LinkedList<Genre> mGenres = new LinkedList<>();
 
     public Book() {
     }
@@ -47,7 +54,7 @@ public class Book implements Comparable{
         this.mDescription = toClone.getDescription();
         this.mUrl = toClone.getUrl();
         this.mSerie = toClone.getSerie();
-        this.mGenre = toClone.getGenre();
+        this.mGenres = toClone.getGenres();
     }
 
     public Integer getId() {
@@ -86,8 +93,8 @@ public class Book implements Comparable{
         return mSerie;
     }
 
-    public @Nullable Genre getGenre() {
-        return mGenre;
+    public LinkedList<Genre> getGenres() {
+        return mGenres;
     }
 
     public String getAuthor() {
@@ -140,8 +147,16 @@ public class Book implements Comparable{
         this.mSerie = serie;
     }
 
-    public void setGenre(@Nullable Genre genre) {
-        this.mGenre = genre;
+    public void addGenre(Genre genre) {
+        this.mGenres.add(genre);
+    }
+
+    public void addGenres(Collection<Genre> genres) {
+        this.mGenres.addAll(genres);
+    }
+
+    public void clearGenres() {
+        this.mGenres.clear();
     }
 
     public boolean save(Context context, DatabaseConnection databaseConnection) {
@@ -156,6 +171,8 @@ public class Book implements Comparable{
         else {
             updateBook(databaseConnection);
         }
+
+        updateBookGenres(databaseConnection);
         return true;
     }
 
@@ -178,10 +195,9 @@ public class Book implements Comparable{
                         "author_first_name, " + // Index: 5
                         "serie, " + // Index: 6
                         "description, " + // Index: 7
-                        "genre, " + // Index: 8
-                        "url" + // Index: 9
+                        "url" + // Index: 8
                         ")" +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
         );
         statement.bindString(1, mTitle);
         statement.bindString(2, mAuthorLastName);
@@ -209,18 +225,11 @@ public class Book implements Comparable{
             statement.bindString(7, mDescription);
         }
 
-        if (mGenre == null){
+        if (mUrl == null){
             statement.bindNull(8);
         }
         else {
-            statement.bindDouble(8, mGenre.getId());
-        }
-
-        if (mUrl == null){
-            statement.bindNull(9);
-        }
-        else {
-            statement.bindString(9, mUrl);
+            statement.bindString(8, mUrl);
         }
 
         mId = databaseConnection.executeInsertQuery(statement);
@@ -236,11 +245,10 @@ public class Book implements Comparable{
                         "author_first_name = ?, " + // Index: 5
                         "serie = ?, " + // Index: 6
                         "description = ?, " + // Index: 7
-                        "genre = ?, " + // Index: 8
-                        "url = ? " + // Index: 9
-                        "WHERE _id = ?" // Index: 10
+                        "url = ? " + // Index: 8
+                        "WHERE _id = ?" // Index: 9
         );
-        statement.bindDouble(10, mId);
+        statement.bindDouble(9, mId);
         statement.bindString(1, mTitle);
         statement.bindString(2, mAuthorLastName);
         statement.bindDouble(3, mRating);
@@ -267,21 +275,33 @@ public class Book implements Comparable{
             statement.bindString(7, mDescription);
         }
 
-        if (mGenre == null){
+        if (mUrl == null){
             statement.bindNull(8);
         }
         else {
-            statement.bindDouble(8, mGenre.getId());
-        }
-
-        if (mUrl == null){
-            statement.bindNull(9);
-        }
-        else {
-            statement.bindString(9, mUrl);
+            statement.bindString(8, mUrl);
         }
 
         databaseConnection.executeUpdateQuery(statement);
+    }
+
+    private void updateBookGenres(DatabaseConnection databaseConnection) {
+        // Remove all genre connections
+        SQLiteStatement statement = databaseConnection.getNewStatement(
+                "DELETE FROM books_genres WHERE book_id = ?;"
+        );
+        statement.bindDouble(1, mId);
+        databaseConnection.executeUpdateQuery(statement);
+
+        // Insert genre connections
+        for (Genre genre : mGenres) {
+            ContentValues insertValues = new ContentValues();
+            insertValues.put("book_id", mId);
+            insertValues.put("genre_id", genre.getId());
+
+            databaseConnection.createConnection();
+            databaseConnection.mDatabase.insertWithOnConflict("books_genres", null, insertValues, SQLiteDatabase.CONFLICT_IGNORE);
+        }
     }
 
     @Override

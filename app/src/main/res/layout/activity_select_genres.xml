@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SelectGenresActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/ibAddNew"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+        <TextView
+            android:id="@+id/tvUnselected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Genres"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@id/ibAddNew"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ListView
+            android:id="@+id/lvUnselected"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/border_black"
+            android:choiceMode="singleChoice"
+            android:listSelector="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ibAddNew" />
+
+        <LinearLayout
+            android:id="@+id/llMove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lvUnselected">
+
+            <ImageButton
+                android:id="@+id/ibSelect"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="20dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#000000"
+                app:srcCompat="@android:drawable/stat_sys_download_done" />
+
+            <ImageButton
+                android:id="@+id/ibUnselect"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/stat_sys_upload_done" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selected genres"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/llMove" />
+
+        <ListView
+            android:id="@+id/lvSelected"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/border_black"
+            android:choiceMode="singleChoice"
+            android:listSelector="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSelected" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
