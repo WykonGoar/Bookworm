@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.wykon.bookworm.R;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 
 /**
@@ -23,12 +24,29 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
     private LinkedList<Book> mbookFilterList;
     private ValueFilter valueFilter;
 
+    private SortOption mSortOption = SortOption.TITLE;
+    private SortOrder mSortOrder = SortOrder.INCREASE;
+
     public BookListAdapter(Context context, LinkedList<Book> books) {
         mContext = context;
         mBooks = books;
         mbookFilterList = books;
     }
 
+    public void setSort(SortOption option, SortOrder order) {
+        mSortOption = option;
+        mSortOrder = order;
+
+        notifyDataSetChanged();
+    }
+
+    public SortOption getSortOption() {
+        return mSortOption;
+    }
+
+    public SortOrder getSortOrder() {
+        return mSortOrder;
+    }
 
     @Override
     public int getCount() {
@@ -118,5 +136,58 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
             mBooks = (LinkedList<Book>) results.values;
             notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        mBooks.sort(new Comparator<Book>() {
+            @Override
+            public int compare(Book lhs, Book rhs) {
+                Book left = lhs;
+                Book right = rhs;
+
+                if (SortOrder.DECREASE == mSortOrder) {
+                    left = rhs;
+                    right = lhs;
+                }
+
+                Integer result;
+                switch (mSortOption) {
+                    case AUTHOR:
+                        String authorLeft = left.getAuthorLastName().toLowerCase();
+                        String authorRight = right.getAuthorLastName().toLowerCase();
+                        result = authorLeft.compareTo(authorRight);
+                        break;
+                    case SERIE:
+                        Serie serieLeft = left.getSerie();
+                        Serie serieRight = right.getSerie();
+
+                        if (serieLeft == null && serieRight == null) {
+                            result = 0;
+                        }
+                        else if (serieLeft == null) {
+                            result = -1;
+                        }
+                        else if (serieRight == null) {
+                            result = 1;
+                        }
+                        else {
+                            String serieNameLeft = serieLeft.getName().toLowerCase();
+                            String serieNameRight = serieLeft.getName().toLowerCase();
+                            result = serieNameLeft.compareTo(serieNameRight);
+                        }
+                        break;
+
+                    default:
+                        String titleLeft = left.getTitle().toLowerCase();
+                        String titleRight = right.getTitle().toLowerCase();
+                        result = titleLeft.compareTo(titleRight);
+                }
+
+                return result;
+            }
+        });
+
+        super.notifyDataSetChanged();
     }
 }

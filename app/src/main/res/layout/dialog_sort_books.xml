@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RadioGroup
+        android:id="@+id/rbgOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:checkableBehavior="single">
+
+        <RadioButton
+            android:id="@+id/rbTitleAZ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Titel (A-Z)"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rbTitleZA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Titel (Z-A)"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rbAuthorAZ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Auteur (A-Z)"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rbAuthorZA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Auteur (Z-A)"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rbSerieAZ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Serie (A-Z)"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rbSerieZA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Serie (Z-A)"
+            android:textSize="18sp" />
+    </RadioGroup>
+</FrameLayout>
