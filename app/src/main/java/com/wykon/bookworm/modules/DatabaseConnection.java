@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -139,7 +140,7 @@ public class DatabaseConnection extends Activity {
         return sqlStatements;
     }
 
-    private void createConnection(){
+    public void createConnection(){
         mDatabase = mContext.openOrCreateDatabase("bookworm", MODE_PRIVATE, null);
     }
 
@@ -239,6 +240,35 @@ public class DatabaseConnection extends Activity {
         return count != 0;
     }
 
+    public Map<Integer, ArrayList<Integer>> getBookGenres() {
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn("SELECT * FROM books_genres;");
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+
+        mCursor.moveToFirst();
+
+        HashMap<Integer, ArrayList<Integer>> bookGenres = new HashMap<>();
+
+        while(!mCursor.isAfterLast()){
+            int bookId = mCursor.getInt(mCursor.getColumnIndex("book_id"));
+            int genreId = mCursor.getInt(mCursor.getColumnIndex("genre_id"));
+
+            if(!bookGenres.containsKey(bookId)) {
+                bookGenres.put(bookId, new ArrayList());
+            }
+            bookGenres.get(bookId).add(genreId);
+
+            mCursor.moveToNext();
+        }
+
+        mDatabase.close();
+        return bookGenres;
+    }
+
     public LinkedList<Serie> getSeries(){
         Cursor mCursor = null;
         try {
@@ -336,6 +366,8 @@ public class DatabaseConnection extends Activity {
         for (Genre genre : getGenres()){
             mappedGenres.put(genre.getId(), genre);
         }
+        Map<Integer, ArrayList<Integer>> bookGenres = getBookGenres();
+
         Map<Integer, Serie> mappedSeries = new HashMap<>();
         for (Serie serie : getSeries()){
             mappedSeries.put(serie.getId(), serie);
@@ -367,9 +399,11 @@ public class DatabaseConnection extends Activity {
                 int serieId = mCursor.getInt(mCursor.getColumnIndex("serie"));
                 book.setSerie(mappedSeries.get(serieId));
             }
-            if (!mCursor.isNull(mCursor.getColumnIndex("genre"))) {
-                int genreId = mCursor.getInt(mCursor.getColumnIndex("genre"));
-                book.setGenre(mappedGenres.get(genreId));
+
+            if (bookGenres.containsKey(id)) {
+                for (Integer genreId : bookGenres.get(id)) {
+                    book.addGenre(mappedGenres.get(genreId));
+                }
             }
 
             books.add(book);

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,7 +50,8 @@ public class EditBookActivity extends AppCompatActivity {
     private Spinner sSerie;
     private CheckBox cbSerieCompleted;
     private EditText etBookNumber;
-    private Spinner sGenre;
+    private TextView tvGenres;
+    private ImageButton ibEditGenres;
     private RatingBar rbRating;
     private EditText etUrl;
     private EditText etDescription;
@@ -59,6 +61,8 @@ public class EditBookActivity extends AppCompatActivity {
 
     private final String NOT_SELECTED = "Not selected";
     private final String CREATE_NEW = "Create new";
+
+    private static int EDIT_GENRES = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +87,8 @@ public class EditBookActivity extends AppCompatActivity {
         sSerie = findViewById(R.id.sSerie);
         cbSerieCompleted = findViewById(R.id.cbSerieCompleted);
         etBookNumber = findViewById(R.id.etBookNumber);
-        sGenre = findViewById(R.id.sGenre);
+        tvGenres = findViewById(R.id.tvGenres);
+        ibEditGenres = findViewById(R.id.ibEditGenres);
         rbRating = findViewById(R.id.rbRating);
         etUrl = findViewById(R.id.etUrl);
         etDescription = findViewById(R.id.etDescription);
@@ -115,23 +120,6 @@ public class EditBookActivity extends AppCompatActivity {
 
             }
         });
-        sGenre.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedGenre = (String) sGenre.getItemAtPosition(position);
-                if(!CREATE_NEW.equals(selectedGenre)) {
-                    lastSelectedGenre = selectedGenre;
-                    return;
-                }
-
-                createNewGenreDialog();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         mBook = new Book();
 
@@ -140,6 +128,20 @@ public class EditBookActivity extends AppCompatActivity {
         if (bookId != -1)
             mBook = mDatabaseConnection.getBook(bookId);
             loadBook();
+
+        ibEditGenres.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent mIntent = new Intent(getApplicationContext(), SelectGenresActivity.class);
+                ArrayList<Integer> genreIds = new ArrayList<>();
+                for (Genre genre : mBook.getGenres()) {
+                    genreIds.add(genre.getId());
+                }
+
+                mIntent.putExtra("selectedGenresIds", genreIds);
+                startActivityForResult(mIntent, EDIT_GENRES);
+            }
+        });
     }
 
     public void loadSpinners() {
@@ -162,10 +164,6 @@ public class EditBookActivity extends AppCompatActivity {
         Collections.sort(mGenreValues);
         mGenreValues.add(0, NOT_SELECTED);
         mGenreValues.add(CREATE_NEW);
-
-        ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(mContext, R.layout.simple_spinner_item, mGenreValues);
-        genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sGenre.setAdapter(genreAdapter);
     }
 
     public void loadBook() {
@@ -190,12 +188,11 @@ public class EditBookActivity extends AppCompatActivity {
             cbSerieCompleted.setChecked(mBook.getSerie().isCompleted());
         }
 
-        lastSelectedGenre = NOT_SELECTED;
-        sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
-        if (mBook.getGenre() != null) {
-            lastSelectedGenre = mBook.getGenre().getName();
-            sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
+        String genres = "";
+        for (Genre genre: mBook.getGenres()) {
+            genres += String.format("%s; ", genre.getName());
         }
+        tvGenres.setText(genres);
 
         etUrl.setText("");
         if (mBook.getUrl() != null) {
@@ -258,14 +255,6 @@ public class EditBookActivity extends AppCompatActivity {
             mBook.setSerie(mSeries.get(selectedSerie));
         }
 
-        String selected_genre = (String) sGenre.getSelectedItem();
-        if(NOT_SELECTED.equals(selected_genre)) {
-            mBook.setGenre(null);
-        }
-        else {
-            mBook.setGenre(mGenres.get(selected_genre));
-        }
-
         if(mBook.save(mContext, mDatabaseConnection)) {
             finish();
         }
@@ -322,60 +311,6 @@ public class EditBookActivity extends AppCompatActivity {
         alert.show();
     }
 
-    public void createNewGenreDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("New genre");
-        // I'm using fragment here so I'm using getView() to provide ViewGroup
-        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        View myView = layoutInflater.inflate(R.layout.dialog_new_genre, null);
-        builder.setView(myView);
-
-        // Set up the buttons
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                sGenre.setSelection(mGenreValues.indexOf(lastSelectedGenre));
-                dialog.cancel();
-            }
-        });
-
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                EditText etNewGenre = ((AlertDialog) dialog).findViewById(R.id.etNewGenre);
-
-                Boolean newGenreCreated = createNewGenre(etNewGenre.getText().toString());
-                if(newGenreCreated)
-                    dialog.dismiss();
-            }
-        });
-
-    }
-
-    public Boolean createNewGenre(String name) {
-        Genre newGenre = new Genre();
-        newGenre.setName(name);
-        if(!newGenre.save(mContext, mDatabaseConnection)) {
-            return false;
-        }
-
-        mGenres.put(newGenre.getName(), newGenre);
-        loadSpinners();
-        sGenre.setSelection(mGenreValues.indexOf(newGenre.getName()));
-        return true;
-    }
-
     public void createNewSerieDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("New serie");
@@ -430,5 +365,32 @@ public class EditBookActivity extends AppCompatActivity {
         loadSpinners();
         sSerie.setSelection(mSerieValues.indexOf(newSerie.getName()));
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (RESULT_OK != resultCode) {
+            return;
+        }
+
+        if(EDIT_GENRES == requestCode) {
+            ArrayList<Integer> selectedGenresIds = data.getIntegerArrayListExtra("selectedGenresIds");
+
+            mBook.clearGenres();
+
+            mGenres = new HashMap<>();
+            for (Genre genre : mDatabaseConnection.getGenres()) {
+                mGenres.put(genre.getName(), genre);
+
+                if (selectedGenresIds.contains(genre.getId())) {
+                    mBook.addGenre(genre);
+                }
+            }
+
+            loadBook();
+        }
+
     }
 }

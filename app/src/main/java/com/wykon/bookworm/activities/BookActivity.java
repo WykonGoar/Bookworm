@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.wykon.bookworm.R;
 import com.wykon.bookworm.modules.Book;
 import com.wykon.bookworm.modules.DatabaseConnection;
+import com.wykon.bookworm.modules.Genre;
 
 public class BookActivity extends AppCompatActivity {
 
@@ -83,10 +84,11 @@ public class BookActivity extends AppCompatActivity {
             cbSerieCompleted.setChecked(mBook.getSerie().isCompleted());
         }
 
-        tvGenre.setText("");
-        if (mBook.getGenre() != null) {
-            tvGenre.setText(mBook.getGenre().getName());
+        String genres = "";
+        for (Genre genre: mBook.getGenres()) {
+            genres += String.format("%s; ", genre.getName());
         }
+        tvGenre.setText(genres);
 
         rbRating.setRating(mBook.getRating());
 

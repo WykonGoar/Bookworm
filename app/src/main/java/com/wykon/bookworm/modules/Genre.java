@@ -30,6 +30,7 @@ public class Genre {
     }
 
     public void setName(String name) {
+        name = name.replace("\n", " ").replace("\r", " ");
         this.mName = name.trim();
     }
 
