@@ -69,6 +69,7 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         View rowView = mLayoutInflater.inflate(R.layout.book_row, parent, false);
 
         TextView tvTitle = rowView.findViewById(R.id.tvTitle);
+        TextView tvRating = rowView.findViewById(R.id.tvRating);
         TextView tvAuthor = rowView.findViewById(R.id.tvAuthor);
         TextView tvSerie = rowView.findViewById(R.id.tvSerie);
         TextView tvBookNumber = rowView.findViewById(R.id.tvBookNumber);
@@ -76,6 +77,7 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         Book book = mBooks.get(position);
 
         tvTitle.setText(book.getTitle());
+        tvRating.setText(String.format("%.1f", book.getRating()));
         tvAuthor.setText(book.getAuthor());
 
         if (book.getSerie() != null) {
@@ -175,6 +177,20 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
                             String serieNameLeft = serieLeft.getName().toLowerCase();
                             String serieNameRight = serieLeft.getName().toLowerCase();
                             result = serieNameLeft.compareTo(serieNameRight);
+                        }
+                        break;
+                    case RATING:
+                        float ratingLeft = left.getRating();
+                        float ratingright = right.getRating();
+
+                        if (ratingLeft == ratingright) {
+                            result = 0;
+                        }
+                        else if (ratingLeft > ratingright) {
+                            result = 1;
+                        }
+                        else {
+                            result = -1;
                         }
                         break;
 

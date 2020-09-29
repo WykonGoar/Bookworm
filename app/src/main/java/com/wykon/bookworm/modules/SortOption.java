@@ -7,4 +7,5 @@ public enum SortOption {
     TITLE,
     AUTHOR,
     SERIE,
+    RATING,
 }
