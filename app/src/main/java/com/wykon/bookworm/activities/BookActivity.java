@@ -79,7 +79,10 @@ public class BookActivity extends AppCompatActivity {
         cbSerieCompleted.setVisibility(View.GONE);
         if (mBook.getSerie() != null) {
             tvSerie.setText(mBook.getSerie().getName());
-            tvBookNumber.setText(String.format("%.1f", mBook.getBookNumber()));
+
+            if (mBook.getBookNumber() != -1) {
+                tvBookNumber.setText(String.format("%.1f", mBook.getBookNumber()));
+            }
             cbSerieCompleted.setVisibility(View.VISIBLE);
             cbSerieCompleted.setChecked(mBook.getSerie().isCompleted());
         }

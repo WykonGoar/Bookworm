@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public void createSortDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Order books by:");
+        builder.setTitle("Sort books by:");
         // I'm using fragment here so I'm using getView() to provide ViewGroup
         // but you can provide here any other instance of ViewGroup from your Fragment / Activity
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);

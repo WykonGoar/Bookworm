@@ -183,7 +183,9 @@ public class EditBookActivity extends AppCompatActivity {
             lastSelectedSerie = mBook.getSerie().getName();
             sSerie.setSelection(mSerieValues.indexOf(lastSelectedSerie));
 
-            etBookNumber.setText(String.format("%.1f", mBook.getBookNumber()));
+            if (mBook.getBookNumber() != -1) {
+                etBookNumber.setText(String.format("%.1f", mBook.getBookNumber()));
+            }
             cbSerieCompleted.setVisibility(View.VISIBLE);
             cbSerieCompleted.setChecked(mBook.getSerie().isCompleted());
         }
