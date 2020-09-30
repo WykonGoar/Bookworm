@@ -54,6 +54,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
+    <CheckBox
+        android:id="@+id/cbCompleted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/design_default_color_on_secondary"
+        android:clickable="false"
+        android:contextClickable="false"
+        android:focusable="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAuthor" />
+
     <TextView
         android:id="@+id/tvSerie"
         android:layout_width="wrap_content"
@@ -61,8 +73,9 @@
         android:text="Serie"
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAuthor" />
+        app:layout_constraintBottom_toBottomOf="@id/cbCompleted"
+        app:layout_constraintStart_toEndOf="@id/cbCompleted"
+        app:layout_constraintTop_toTopOf="@id/cbCompleted" />
 
     <TextView
         android:id="@+id/tvBookNumber"
@@ -75,6 +88,7 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/tvSerie"
-        app:layout_constraintTop_toBottomOf="@+id/tvAuthor"/>
+        app:layout_constraintTop_toTopOf="@id/cbCompleted"
+        app:layout_constraintBottom_toBottomOf="@id/cbCompleted" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

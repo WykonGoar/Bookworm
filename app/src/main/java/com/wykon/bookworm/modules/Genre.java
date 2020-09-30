@@ -21,6 +21,11 @@ public class Genre {
         this.mName = name;
     }
 
+    public Genre(Genre toClone) {
+        this.mId = toClone.getId();
+        this.mName = toClone.getName();
+    }
+
     public Integer getId() {
         return mId;
     }
@@ -77,7 +82,7 @@ public class Genre {
     private void updateGenre(DatabaseConnection databaseConnection) {
         SQLiteStatement statement = databaseConnection.getNewStatement(
                 "UPDATE genres SET " +
-                        "name = ?, " + // Index: 1
+                        "name = ? " + // Index: 1
                         "WHERE _id = ?" // Index: 2
         );
         statement.bindDouble(2, mId);

@@ -9,8 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.SelectGenresActivity"></activity>
-        <activity android:name=".activities.EditBookActivity"></activity>
+        <activity android:name=".activities.GenresActivity"></activity>
+        <activity android:name=".activities.SeriesActivity" />
+        <activity android:name=".activities.SelectGenresActivity" />
+        <activity android:name=".activities.EditBookActivity" />
         <activity android:name=".activities.BookActivity" />
         <activity
             android:name=".activities.MainActivity"

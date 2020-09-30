@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -71,6 +72,7 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         TextView tvTitle = rowView.findViewById(R.id.tvTitle);
         TextView tvRating = rowView.findViewById(R.id.tvRating);
         TextView tvAuthor = rowView.findViewById(R.id.tvAuthor);
+        CheckBox cbCompleted = rowView.findViewById(R.id.cbCompleted);
         TextView tvSerie = rowView.findViewById(R.id.tvSerie);
         TextView tvBookNumber = rowView.findViewById(R.id.tvBookNumber);
 
@@ -81,6 +83,7 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         tvAuthor.setText(book.getAuthor());
 
         if (book.getSerie() != null) {
+            cbCompleted.setChecked(book.getSerie().isCompleted());
             tvSerie.setText(book.getSerie().getName());
 
             tvBookNumber.setText("");
@@ -89,6 +92,7 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
             }
         }
         else {
+            cbCompleted.setVisibility(View.INVISIBLE);
             tvSerie.setText("");
             tvBookNumber.setText("");
         }
