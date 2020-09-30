@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     public void createSortDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Order books by:");
+        builder.setTitle("Sort books by:");
         // I'm using fragment here so I'm using getView() to provide ViewGroup
         // but you can provide here any other instance of ViewGroup from your Fragment / Activity
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
@@ -150,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         RadioButton rbAuthorZA = dialog.findViewById(R.id.rbAuthorZA);
         RadioButton rbSerieAZ = dialog.findViewById(R.id.rbSerieAZ);
         RadioButton rbSerieZA = dialog.findViewById(R.id.rbSerieZA);
+        RadioButton rbRating05 = dialog.findViewById(R.id.rbRating05);
+        RadioButton rbRating50 = dialog.findViewById(R.id.rbRating50);
 
         switch (mBookListAdapter.getSortOption()) {
             case AUTHOR:
@@ -166,6 +168,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 else {
                     rbSerieZA.setChecked(true);
+                }
+                break;
+            case RATING:
+                if(SortOrder.INCREASE == mBookListAdapter.getSortOrder()) {
+                    rbRating05.setChecked(true);
+                }
+                else {
+                    rbRating50.setChecked(true);
                 }
                 break;
             default:
@@ -198,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         break;
                     case R.id.rbSerieZA:
                         mBookListAdapter.setSort(SortOption.SERIE, SortOrder.DECREASE);
+                        break;
+                    case R.id.rbRating05:
+                        mBookListAdapter.setSort(SortOption.RATING, SortOrder.INCREASE);
+                        break;
+                    case R.id.rbRating50:
+                        mBookListAdapter.setSort(SortOption.RATING, SortOrder.DECREASE);
                         break;
                     default:
                         mBookListAdapter.setSort(SortOption.TITLE, SortOrder.INCREASE);
