@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Bookworm</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="nav_book_list">Book list</string>
+    <string name="nav_wish_list">Wish list</string>
+    <string name="nav_series">Series</string>
+    <string name="nav_genres">Genres</string>
+
+    <string name="menu_book_list">Book list</string>
+    <string name="menu_wish_list">Wish list</string>
+    <string name="menu_series">Series</string>
+    <string name="menu_genres">Genres</string>
 </resources>

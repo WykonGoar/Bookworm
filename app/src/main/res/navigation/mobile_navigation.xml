@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_books_list">
+
+    <fragment
+        android:id="@+id/nav_books_list"
+        android:name="com.wykon.bookworm.activities.ui.booklist.BooksFragment"
+        android:label="@string/menu_book_list"
+        tools:layout="@layout/fragment_book_list" />
+
+    <fragment
+        android:id="@+id/nav_wish_list"
+        android:name="com.wykon.bookworm.activities.ui.wishlist.WishesFragment"
+        android:label="@string/menu_wish_list"
+        tools:layout="@layout/fragment_wish_list" />
+
+    <fragment
+        android:id="@+id/nav_series"
+        android:name="com.wykon.bookworm.activities.ui.series.SeriesFragment"
+        android:label="@string/menu_series"
+        tools:layout="@layout/fragment_series" />
+
+    <fragment
+        android:id="@+id/nav_genres"
+        android:name="com.wykon.bookworm.activities.ui.genres.GenresFragment"
+        android:label="@string/menu_genres"
+        tools:layout="@layout/fragment_genres" />
+</navigation>

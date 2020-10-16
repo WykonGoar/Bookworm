@@ -350,7 +350,7 @@ public class DatabaseConnection extends Activity {
     public LinkedList<Book> _getBooks(int bookId) {
         Cursor mCursor = null;
 
-        String query = "SELECT * FROM books ORDER BY title";
+        String query = "SELECT * FROM books WHERE is_wish = 0 ORDER BY title"; //WHERE is_wish = 0
         if (bookId != -1) {
             query = String.format("SELECT * FROM books WHERE _id = %d ORDER BY LOWER(title)", bookId);
         }
@@ -432,6 +432,90 @@ public class DatabaseConnection extends Activity {
         int count = mCursor.getInt(mCursor.getColumnIndex("count"));
 
         return count != 0;
+    }
+
+    public LinkedList<WishBook> getWishBooks() {
+        return _getWishBooks(-1);
+    }
+
+    public @Nullable WishBook getWishBook(int bookId) {
+        LinkedList<WishBook> WishBook = _getWishBooks(bookId);
+
+        if(WishBook.size() == 0) {
+            throw new IndexOutOfBoundsException(String.format("WishBook with id '%d' not found.", bookId));
+        }
+
+        return WishBook.getFirst();
+    }
+
+    public LinkedList<WishBook> _getWishBooks(int bookId) {
+        Cursor mCursor = null;
+
+        String query = "SELECT * FROM books WHERE is_wish = 1 ORDER BY release_date";
+        if (bookId != -1) {
+            query = String.format("SELECT * FROM books WHERE _id = %d ORDER BY release_date", bookId);
+        }
+
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+            return new LinkedList<>();
+        }
+
+        Map<Integer, Genre> mappedGenres = new HashMap<>();
+        for (Genre genre : getGenres()){
+            mappedGenres.put(genre.getId(), genre);
+        }
+        Map<Integer, ArrayList<Integer>> bookGenres = getBookGenres();
+
+        Map<Integer, Serie> mappedSeries = new HashMap<>();
+        for (Serie serie : getSeries()){
+            mappedSeries.put(serie.getId(), serie);
+        }
+
+        mCursor.moveToFirst();
+
+        LinkedList<WishBook> wishBooks = new LinkedList<>();
+
+        while(!mCursor.isAfterLast()){
+            int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
+            String author_last_name = mCursor.getString(mCursor.getColumnIndex("author_last_name"));
+            String title = mCursor.getString(mCursor.getColumnIndex("title"));
+            float rating = mCursor.getFloat(mCursor.getColumnIndex("rating"));
+            double bookNumber = mCursor.getDouble(mCursor.getColumnIndex("book_number"));
+
+            WishBook wishBook = new WishBook(id, author_last_name, title, rating, bookNumber);
+
+            if (!mCursor.isNull(mCursor.getColumnIndex("author_first_name"))) {
+                wishBook.setAuthorFirstName(mCursor.getString(mCursor.getColumnIndex("author_first_name")));
+            }
+            if (!mCursor.isNull(mCursor.getColumnIndex("description"))) {
+                wishBook.setDescription(mCursor.getString(mCursor.getColumnIndex("description")));
+            }
+            if (!mCursor.isNull(mCursor.getColumnIndex("url"))) {
+                wishBook.setUrl(mCursor.getString(mCursor.getColumnIndex("url")));
+            }
+            if (!mCursor.isNull(mCursor.getColumnIndex("release_date"))) {
+                wishBook.setReleaseDate(mCursor.getString(mCursor.getColumnIndex("release_date")));
+            }
+            if (!mCursor.isNull(mCursor.getColumnIndex("serie"))) {
+                int serieId = mCursor.getInt(mCursor.getColumnIndex("serie"));
+                wishBook.setSerie(mappedSeries.get(serieId));
+            }
+
+            if (bookGenres.containsKey(id)) {
+                for (Integer genreId : bookGenres.get(id)) {
+                    wishBook.addGenre(mappedGenres.get(genreId));
+                }
+            }
+
+            wishBooks.add(wishBook);
+            mCursor.moveToNext();
+        }
+
+        mDatabase.close();
+        return wishBooks;
     }
 }
 
