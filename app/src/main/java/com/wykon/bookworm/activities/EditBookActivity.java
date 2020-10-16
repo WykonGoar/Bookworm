@@ -231,7 +231,8 @@ public class EditBookActivity extends AppCompatActivity {
         mBook.setBookNumber(-1.0);
         if(!etBookNumber.getText().toString().isEmpty()) {
             String sBookNumber = etBookNumber.getText().toString();
-            mBook.setBookNumber(Float.parseFloat(sBookNumber));
+            sBookNumber = sBookNumber.replace(",", ".");
+            mBook.setBookNumber(Double.parseDouble(sBookNumber));
         }
 
         mBook.setAuthorFirstName(null);
