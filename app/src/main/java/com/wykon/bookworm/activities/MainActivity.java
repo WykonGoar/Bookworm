@@ -112,8 +112,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (R.id.bOrder == id) {
-            createSortDialog();
+        Intent mIntent = null;
+        switch (id) {
+            case R.id.bOrder:
+                createSortDialog();
+                break;
+            case R.id.bSeries:
+                mIntent = new Intent(getApplicationContext(), SeriesActivity.class);
+                startActivity(mIntent);
+                break;
+            case R.id.bGenres:
+                mIntent = new Intent(getApplicationContext(), GenresActivity.class);
+                startActivity(mIntent);
+                break;
         }
 
         //noinspection SimplifiableIfStatement

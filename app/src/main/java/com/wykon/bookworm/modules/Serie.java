@@ -22,6 +22,12 @@ public class Serie {
         this.mName = name;
     }
 
+    public Serie(Serie toClone) {
+        this.mId = toClone.getId();
+        this.mName = toClone.getName();
+        this.mComplete = toClone.isCompleted();
+    }
+
     public Integer getId() {
         return mId;
     }
@@ -94,7 +100,7 @@ public class Serie {
         SQLiteStatement statement = databaseConnection.getNewStatement(
                 "UPDATE series SET " +
                         "name = ?, " + // Index: 1
-                        "complete = ?, " + // Index: 2
+                        "complete = ? " + // Index: 2
                         "WHERE _id = ?" // Index: 3
         );
         statement.bindDouble(3, mId);
