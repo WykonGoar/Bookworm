@@ -20,18 +20,18 @@ import java.util.List;
 public class Book implements Comparable{
 
     // Required
-    private Integer mId = -1;
-    private String mAuthorLastName = "";
-    private String mTitle = "";
-    private float mRating = 0.0f;
-    private double mBookNumber = -1.0;
+    protected Integer mId = -1;
+    protected String mAuthorLastName = "";
+    protected String mTitle = "";
+    protected float mRating = 0.0f;
+    protected double mBookNumber = -1.0;
 
     // Optional
-    private String mAuthorFirstName = null;
-    private String mDescription = null;
-    private String mUrl = null;
-    private Serie mSerie = null;
-    private LinkedList<Genre> mGenres = new LinkedList<>();
+    protected String mAuthorFirstName = null;
+    protected String mDescription = null;
+    protected String mUrl = null;
+    protected Serie mSerie = null;
+    protected LinkedList<Genre> mGenres = new LinkedList<>();
 
     public Book() {
     }
@@ -178,7 +178,7 @@ public class Book implements Comparable{
 
     public void delete(DatabaseConnection databaseConnection) {
         SQLiteStatement statement = databaseConnection.getNewStatement(
-                "DELETE FROM books WHERE _id = ?;"
+                "DELETE FROM books WHERE _id = ? AND is_wish = 1;"
         );
         statement.bindDouble(1, mId);
 
@@ -285,7 +285,7 @@ public class Book implements Comparable{
         databaseConnection.executeUpdateQuery(statement);
     }
 
-    private void updateBookGenres(DatabaseConnection databaseConnection) {
+    public void updateBookGenres(DatabaseConnection databaseConnection) {
         // Remove all genre connections
         SQLiteStatement statement = databaseConnection.getNewStatement(
                 "DELETE FROM books_genres WHERE book_id = ?;"

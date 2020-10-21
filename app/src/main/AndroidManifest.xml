@@ -9,19 +9,30 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.GenresActivity"></activity>
-        <activity android:name=".activities.SeriesActivity" />
-        <activity android:name=".activities.SelectGenresActivity" />
-        <activity android:name=".activities.EditBookActivity" />
-        <activity android:name=".activities.BookActivity" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.NavigationActivity"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.GenresActivity" />
+        <activity android:name=".activities.SeriesActivity" />
+        <activity android:name=".activities.SelectGenresActivity" />
+        <activity android:name=".activities.EditBookActivity" />
+        <activity android:name=".activities.BookActivity" />
+        <activity android:name=".activities.WishBookActivity" />
+        <activity android:name=".activities.EditWishBookActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.Launcher">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 

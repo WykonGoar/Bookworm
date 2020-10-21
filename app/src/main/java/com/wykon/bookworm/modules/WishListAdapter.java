@@ -10,28 +10,31 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.wykon.bookworm.R;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
  * Created by Wouter on 11-09-2020.
  */
-public class BookListAdapter extends BaseAdapter implements Filterable {
+public class WishListAdapter extends BaseAdapter implements Filterable {
 
     private Context mContext;
-    private LinkedList<Book> mBooks;
-    private LinkedList<Book> mbookFilterList;
+    private LinkedList<WishBook> mWishBooks;
+    private LinkedList<WishBook> mWishBookFilterList;
     private ValueFilter valueFilter;
 
-    private SortOption mSortOption = SortOption.TITLE;
+    private SortOption mSortOption = SortOption.DATE;
     private SortOrder mSortOrder = SortOrder.INCREASE;
 
-    public BookListAdapter(Context context, LinkedList<Book> books) {
+    public WishListAdapter(Context context, LinkedList<WishBook> wishBooks) {
         mContext = context;
-        mBooks = books;
-        mbookFilterList = books;
+        mWishBooks = wishBooks;
+        mWishBookFilterList = wishBooks;
     }
 
     public void setSort(SortOption option, SortOrder order) {
@@ -51,44 +54,44 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        return mBooks.size();
+        return mWishBooks.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mBooks.get(position);
+        return mWishBooks.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return mBooks.indexOf(getItem(position));
+        return mWishBooks.indexOf(getItem(position));
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = mLayoutInflater.inflate(R.layout.book_row, parent, false);
+        View rowView = mLayoutInflater.inflate(R.layout.wish_book_row, parent, false);
 
         TextView tvTitle = rowView.findViewById(R.id.tvTitle);
-        TextView tvRating = rowView.findViewById(R.id.tvRating);
         TextView tvAuthor = rowView.findViewById(R.id.tvAuthor);
         CheckBox cbCompleted = rowView.findViewById(R.id.cbCompleted);
         TextView tvSerie = rowView.findViewById(R.id.tvSerie);
         TextView tvBookNumber = rowView.findViewById(R.id.tvBookNumber);
+        TextView tvReleaseDate = rowView.findViewById(R.id.tvReleaseDate);
 
-        Book book = mBooks.get(position);
+        WishBook wishBook = mWishBooks.get(position);
 
-        tvTitle.setText(book.getTitle());
-        tvRating.setText(String.format("%.1f", book.getRating()));
-        tvAuthor.setText(book.getAuthor());
+        tvTitle.setText(wishBook.getTitle());
+        tvAuthor.setText(wishBook.getAuthor());
+        tvReleaseDate.setText(wishBook.getRenderedReleaseDate());
 
-        if (book.getSerie() != null) {
-            cbCompleted.setChecked(book.getSerie().isCompleted());
-            tvSerie.setText(book.getSerie().getName());
+        if (wishBook.getSerie() != null) {
+            cbCompleted.setChecked(wishBook.getSerie().isCompleted());
+            tvSerie.setText(wishBook.getSerie().getName());
 
             tvBookNumber.setText("");
-            if (book.getBookNumber() != -1.0) {
-                tvBookNumber.setText(String.format("%.1f", book.getBookNumber()));
+            if (wishBook.getBookNumber() != -1.0) {
+                tvBookNumber.setText(String.format("%.1f", wishBook.getBookNumber()));
             }
         }
         else {
@@ -113,45 +116,45 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
             FilterResults results = new FilterResults();
 
             if (constraint != null && constraint.length() > 0) {
-                LinkedList<Book> filterList = new LinkedList<Book>();
-                for (int i = 0; i < mbookFilterList.size(); i++) {
-                    Book list_item = mbookFilterList.get(i);
+                LinkedList<WishBook> filterList = new LinkedList<WishBook>();
+                for (int i = 0; i < mWishBookFilterList.size(); i++) {
+                    WishBook list_item = mWishBookFilterList.get(i);
 
                     String upperConstraint = constraint.toString().toUpperCase();
                     if (list_item.getTitle().toUpperCase().contains(upperConstraint)){
-                        filterList.add(new Book(list_item));
+                        filterList.add(new WishBook(list_item));
                     }
                     else if (list_item.getAuthor().toUpperCase().contains(upperConstraint)){
-                        filterList.add(new Book(list_item));
+                        filterList.add(new WishBook(list_item));
                     }
                     else if (list_item.getSerie() != null
                             && list_item.getSerie().getName().toUpperCase().contains(upperConstraint)){
-                        filterList.add(new Book(list_item));
+                        filterList.add(new WishBook(list_item));
                     }
                 }
                 results.count = filterList.size();
                 results.values = filterList;
             } else {
-                results.count = mbookFilterList.size();
-                results.values = mbookFilterList;
+                results.count = mWishBookFilterList.size();
+                results.values = mWishBookFilterList;
             }
             return results;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mBooks = (LinkedList<Book>) results.values;
+            mWishBooks = (LinkedList<WishBook>) results.values;
             notifyDataSetChanged();
         }
     }
 
     @Override
     public void notifyDataSetChanged() {
-        mBooks.sort(new Comparator<Book>() {
+        mWishBooks.sort(new Comparator<WishBook>() {
             @Override
-            public int compare(Book lhs, Book rhs) {
-                Book left = lhs;
-                Book right = rhs;
+            public int compare(@Nullable WishBook lhs, @Nullable WishBook rhs) {
+                WishBook left = lhs;
+                WishBook right = rhs;
 
                 if (SortOrder.DECREASE == mSortOrder) {
                     left = rhs;
@@ -164,6 +167,22 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
                         String authorLeft = left.getAuthorLastName().toLowerCase();
                         String authorRight = right.getAuthorLastName().toLowerCase();
                         result = authorLeft.compareTo(authorRight);
+                        break;
+                    case DATE:
+                        Date dateLeft = left.getReleaseDate();
+                        Date dateRight = right.getReleaseDate();
+                        if (dateLeft == null && dateRight == null) {
+                            result = 0;
+                        }
+                        else if (dateLeft == null) {
+                            result = 1;
+                        }
+                        else if (dateRight == null) {
+                            result = -1;
+                        }
+                        else {
+                            result = dateLeft.compareTo(dateRight);
+                        }
                         break;
                     case SERIE:
                         Serie serieLeft = left.getSerie();
@@ -204,21 +223,6 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
                         }
 
                         break;
-                    case RATING:
-                        float ratingLeft = left.getRating();
-                        float ratingright = right.getRating();
-
-                        if (ratingLeft == ratingright) {
-                            result = 0;
-                        }
-                        else if (ratingLeft > ratingright) {
-                            result = 1;
-                        }
-                        else {
-                            result = -1;
-                        }
-                        break;
-
                     case TITLE:
                     default:
                         String titleLeft = left.getTitle().toLowerCase();

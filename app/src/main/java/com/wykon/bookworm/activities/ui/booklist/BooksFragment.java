@@ -1,24 +1,31 @@
-package com.wykon.bookworm.activities;
+package com.wykon.bookworm.activities.ui.booklist;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.wykon.bookworm.R;
+import com.wykon.bookworm.activities.BookActivity;
+import com.wykon.bookworm.activities.EditBookActivity;
 import com.wykon.bookworm.modules.Book;
 import com.wykon.bookworm.modules.BookListAdapter;
 import com.wykon.bookworm.modules.DatabaseConnection;
@@ -27,71 +34,65 @@ import com.wykon.bookworm.modules.SortOrder;
 
 import java.util.LinkedList;
 
-/**
- * Created by WykonGoar on 11-09-2020.
- */
-
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class BooksFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private LinkedList<Book> mBooks = new LinkedList<>();
 
+    private View root;
     private Context mContext;
     private DatabaseConnection mDatabaseConnection;
     private BookListAdapter mBookListAdapter;
 
     private ListView mBookListView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        root = inflater.inflate(R.layout.fragment_book_list, container, false);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setHasOptionsMenu(true);
 
-        mContext = this;
-        mDatabaseConnection = new DatabaseConnection(this);
+        mContext = getActivity().getApplicationContext();
+        mDatabaseConnection = new DatabaseConnection(mContext);
 
-        FloatingActionButton fab = findViewById(R.id.fabAdd);
+        FloatingActionButton fab = root.findViewById(R.id.fabAdd);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent mIntent = new Intent(getApplicationContext(), EditBookActivity.class);
+                Intent mIntent = new Intent(mContext, EditBookActivity.class);
                 startActivity(mIntent);
             }
         });
 
-        mBookListView = findViewById(R.id.lvBooks);
+        mBookListView = root.findViewById(R.id.lvBooks);
         mBookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Book book = (Book) mBookListAdapter.getItem(position);
 
-                Intent mIntent = new Intent(getApplicationContext(), BookActivity.class);
+                Intent mIntent = new Intent(mContext.getApplicationContext(), BookActivity.class);
                 mIntent.putExtra("id", book.getId());
                 startActivity(mIntent);
             }
         });
 
-        loadBooks();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadBooks();
+        return root;
     }
 
     private void loadBooks(){
         mBooks = mDatabaseConnection.getBooks();
 
-        mBookListAdapter = new BookListAdapter(this, mBooks);
+        mBookListAdapter = new BookListAdapter(mContext, mBooks);
         mBookListView.setAdapter(mBookListAdapter);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+    public void onResume() {
+        super.onResume();
+        loadBooks();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
 
         MenuItem searchItem = menu.findItem(R.id.bSearch);
         SearchView searchView = null;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             searchView.setOnQueryTextListener(this);
         }
 
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -116,35 +117,28 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if (R.id.bOrder == id) {
             createSortDialog();
         }
-//        switch (id) {
-//            case R.id.bOrder:
-//                createSortDialog();
-//                break;
-//            case R.id.bSeries:
-//                mIntent = new Intent(getApplicationContext(), SeriesActivity.class);
-//                startActivity(mIntent);
-//                break;
-//            case R.id.bGenres:
-//                mIntent = new Intent(getApplicationContext(), GenresActivity.class);
-//                startActivity(mIntent);
-//                break;
-//        }
-
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.export) {
-//            return true;
-//        }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        mBookListAdapter.getFilter().filter(newText);
+        return false;
+    }
+
     public void createSortDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Sort books by:");
         // I'm using fragment here so I'm using getView() to provide ViewGroup
         // but you can provide here any other instance of ViewGroup from your Fragment / Activity
-        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-        View myView = layoutInflater.inflate(R.layout.dialog_sort_books, null);
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View myView = layoutInflater.inflate(R.layout.dialog_sort_books, (ViewGroup) root, false);
         builder.setView(myView);
 
         // Set up the buttons
@@ -237,16 +231,5 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         });
 
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        mBookListAdapter.getFilter().filter(newText);
-        return false;
     }
 }
