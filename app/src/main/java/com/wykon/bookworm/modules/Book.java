@@ -285,6 +285,16 @@ public class Book implements Comparable{
         databaseConnection.executeUpdateQuery(statement);
     }
 
+    public void moveToWishList(DatabaseConnection databaseConnection) {
+        SQLiteStatement statement = databaseConnection.getNewStatement(
+                "UPDATE books SET is_wish = 1 " +
+                        "WHERE _id = ?" // Index: 1
+        );
+        statement.bindDouble(1, mId);
+
+        databaseConnection.executeUpdateQuery(statement);
+    }
+
     public void updateBookGenres(DatabaseConnection databaseConnection) {
         // Remove all genre connections
         SQLiteStatement statement = databaseConnection.getNewStatement(

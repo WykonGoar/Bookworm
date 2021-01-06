@@ -209,4 +209,14 @@ public class WishBook extends Book {
 
         databaseConnection.executeUpdateQuery(statement);
     }
+
+    public void moveToBookList(DatabaseConnection databaseConnection) {
+        SQLiteStatement statement = databaseConnection.getNewStatement(
+                "UPDATE books SET is_wish = 0 " +
+                        "WHERE _id = ?" // Index: 1
+        );
+        statement.bindDouble(1, mId);
+
+        databaseConnection.executeUpdateQuery(statement);
+    }
 }

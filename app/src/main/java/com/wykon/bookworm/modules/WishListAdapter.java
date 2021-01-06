@@ -52,6 +52,11 @@ public class WishListAdapter extends BaseAdapter implements Filterable {
         return mSortOrder;
     }
 
+    public void removeItem(int position) {
+        mWishBooks.remove(position);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return mWishBooks.size();

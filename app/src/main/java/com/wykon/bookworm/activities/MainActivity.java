@@ -116,21 +116,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if (R.id.bOrder == id) {
             createSortDialog();
         }
-//        switch (id) {
-//            case R.id.bOrder:
-//                createSortDialog();
-//                break;
-//            case R.id.bSeries:
-//                mIntent = new Intent(getApplicationContext(), SeriesActivity.class);
-//                startActivity(mIntent);
-//                break;
-//            case R.id.bGenres:
-//                mIntent = new Intent(getApplicationContext(), GenresActivity.class);
-//                startActivity(mIntent);
-//                break;
-//        }
-
-        //noinspection SimplifiableIfStatement
 //        if (id == R.id.export) {
 //            return true;
 //        }

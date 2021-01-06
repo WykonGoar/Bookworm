@@ -324,13 +324,15 @@ public class EditWishBookActivity extends AppCompatActivity {
     }
 
     public void confirmCancel() {
+        String title = "Stop creating";
         String error_message = "Do you want stop creating this book?";
         if (mWishBook.getId() != -1) {
+            title = "Stop updating";
             error_message = "Do you want stop updating this book?";
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle(R.string.app_name);
+        builder.setTitle(title);
         builder.setMessage(error_message);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -392,6 +394,12 @@ public class EditWishBookActivity extends AppCompatActivity {
     public Boolean createNewSerie(String name, Boolean completed) {
         Serie newSerie = new Serie();
         newSerie.setName(name);
+
+        if (newSerie.getName().isEmpty()) {
+            Toast.makeText(mContext, "Name can not be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         newSerie.setComplete(completed);
         if(!newSerie.save(mContext, mDatabaseConnection)) {
             return false;
