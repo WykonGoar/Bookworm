@@ -156,6 +156,12 @@ public class GenresFragment extends Fragment implements SearchView.OnQueryTextLi
             newGenre = true;
         }
         genre.setName(name);
+
+        if (genre.getName().isEmpty()) {
+            Toast.makeText(mContext, "Name can not be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if(!genre.save(mContext, mDatabaseConnection)) {
             return false;
         }

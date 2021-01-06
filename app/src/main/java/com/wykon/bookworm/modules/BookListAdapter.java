@@ -49,6 +49,11 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         return mSortOrder;
     }
 
+    public void removeItem(int position) {
+        mBooks.remove(position);
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         return mBooks.size();

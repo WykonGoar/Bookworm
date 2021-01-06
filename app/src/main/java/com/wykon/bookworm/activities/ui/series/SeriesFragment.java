@@ -155,6 +155,11 @@ public class SeriesFragment extends Fragment implements SearchView.OnQueryTextLi
             newSerie = true;
         }
         serie.setName(name);
+        if (serie.getName().isEmpty()) {
+            Toast.makeText(mContext, "Name can not be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         serie.setComplete(completed);
         if(!serie.save(mContext, mDatabaseConnection)) {
             return false;

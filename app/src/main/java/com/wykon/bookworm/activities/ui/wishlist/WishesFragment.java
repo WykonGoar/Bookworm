@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -26,6 +27,7 @@ import com.wykon.bookworm.activities.BookActivity;
 import com.wykon.bookworm.activities.EditBookActivity;
 import com.wykon.bookworm.activities.EditWishBookActivity;
 import com.wykon.bookworm.activities.WishBookActivity;
+import com.wykon.bookworm.modules.Book;
 import com.wykon.bookworm.modules.DatabaseConnection;
 import com.wykon.bookworm.modules.SortOption;
 import com.wykon.bookworm.modules.SortOrder;
@@ -73,6 +75,17 @@ public class WishesFragment extends Fragment  implements SearchView.OnQueryTextL
                 Intent mIntent = new Intent(mContext.getApplicationContext(), WishBookActivity.class);
                 mIntent.putExtra("id", book.getId());
                 startActivity(mIntent);
+            }
+        });
+
+        mWishBookListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                WishBook book = (WishBook) mWishBookListAdapter.getItem(position);
+
+                createMoveToBookListDialog(book, position);
+
+                return true;
             }
         });
 
@@ -233,5 +246,31 @@ public class WishesFragment extends Fragment  implements SearchView.OnQueryTextL
             }
         });
 
+    }
+
+    public void createMoveToBookListDialog(final WishBook book, final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // I'm using fragment here so I'm using getView() to provide ViewGroup
+        // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+        builder.setTitle(book.getTitle());
+        builder.setMessage("Move to book list?");
+
+        builder.setPositiveButton("Move", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                book.moveToBookList(mDatabaseConnection);
+                mWishBookListAdapter.removeItem(position);
+                Toast.makeText(mContext, "Moved", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
