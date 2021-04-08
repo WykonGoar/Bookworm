@@ -6,9 +6,11 @@
     <string name="nav_wish_list">Wish list</string>
     <string name="nav_series">Series</string>
     <string name="nav_genres">Genres</string>
+    <string name="nav_import">Import</string>
 
     <string name="menu_book_list">Book list</string>
     <string name="menu_wish_list">Wish list</string>
     <string name="menu_series">Series</string>
     <string name="menu_genres">Genres</string>
+    <string name="menu_import">Import</string>
 </resources>

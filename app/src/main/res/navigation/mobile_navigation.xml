@@ -28,4 +28,10 @@
         android:name="com.wykon.bookworm.activities.ui.genres.GenresFragment"
         android:label="@string/menu_genres"
         tools:layout="@layout/fragment_genres" />
+
+    <fragment
+        android:id="@+id/nav_import"
+        android:name="com.wykon.bookworm.activities.ui.transfer.ImportFragment"
+        android:label="@string/menu_import"
+        tools:layout="@layout/fragment_import" />
 </navigation>
