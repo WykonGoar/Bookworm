@@ -165,70 +165,28 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
 
                 Integer result;
                 switch (mSortOption) {
-                    case AUTHOR:
-                        String authorLeft = left.getAuthorLastName().toLowerCase();
-                        String authorRight = right.getAuthorLastName().toLowerCase();
-                        result = authorLeft.compareTo(authorRight);
-                        break;
                     case SERIE:
-                        Serie serieLeft = left.getSerie();
-                        Serie serieRight = right.getSerie();
-
-                        if (serieLeft == null && serieRight == null) {
-                            result = 0;
-                        }
-                        else if (serieLeft == null) {
-                            result = -1;
-                        }
-                        else if (serieRight == null) {
-                            result = 1;
-                        }
-                        else {
-                            String serieNameLeft = serieLeft.getName().toLowerCase();
-                            String serieNameRight = serieLeft.getName().toLowerCase();
-                            result = serieNameLeft.compareTo(serieNameRight);
-                        }
-
-                        if(0 == result) {
-                            double bookNumberLeft = left.getBookNumber();
-                            double bookNumberRight = right.getBookNumber();
-
-                            if (bookNumberLeft == -1 && bookNumberRight == -1) {
-                                result = 0;
-                            }
-                            else if (bookNumberLeft == -1) {
-                                result = -1;
-                            }
-                            else if (bookNumberRight == -1) {
-                                result = 1;
-                            }
-                            else {
-                                result = Double.compare(bookNumberLeft, bookNumberRight);
-                            }
-
-                        }
-
+                        result = compare_serie(left, right);
                         break;
                     case RATING:
-                        float ratingLeft = left.getRating();
-                        float ratingright = right.getRating();
+                        result = compare_rating(left, right);
+                        break;
+                    case AUTHOR:
+                        result = compare_author(left, right);
 
-                        if (ratingLeft == ratingright) {
-                            result = 0;
-                        }
-                        else if (ratingLeft > ratingright) {
-                            result = 1;
-                        }
-                        else {
-                            result = -1;
+                        if (0 == result) {
+                            result = backup_compare(left, right);
                         }
                         break;
-
                     case TITLE:
                     default:
                         String titleLeft = left.getTitle().toLowerCase();
                         String titleRight = right.getTitle().toLowerCase();
                         result = titleLeft.compareTo(titleRight);
+
+                        if (0 == result){
+                            result = compare_serie(left, right);
+                        }
                 }
 
                 return result;
@@ -236,5 +194,103 @@ public class BookListAdapter extends BaseAdapter implements Filterable {
         });
 
         super.notifyDataSetChanged();
+    }
+
+    private int compare_author(Book left, Book right) {
+        String authorLeft = left.getAuthorLastName().toLowerCase();
+        String authorRight = right.getAuthorLastName().toLowerCase();
+        int result = authorLeft.compareTo(authorRight);
+
+        if (0 == result) {
+            String firstAuthorLeft = left.getAuthorFirstName();
+            String firstAuthorRight = right.getAuthorFirstName();
+
+            if (firstAuthorLeft == null && firstAuthorRight == null) {
+                result = 0;
+            } else if (firstAuthorLeft == null) {
+                result = -1;
+            } else if (firstAuthorRight == null) {
+                result = 1;
+            } else {
+                result = firstAuthorLeft.toLowerCase().compareTo(firstAuthorRight.toLowerCase());
+            }
+        }
+
+        return result;
+    }
+
+    private int compare_serie(Book left, Book right) {
+        Serie serieLeft = left.getSerie();
+        Serie serieRight = right.getSerie();
+
+        int result;
+        if (serieLeft == null && serieRight == null) {
+            result = 0;
+        }
+        else if (serieLeft == null) {
+            result = -1;
+        }
+        else if (serieRight == null) {
+            result = 1;
+        }
+        else {
+            String serieNameLeft = serieLeft.getName().toLowerCase();
+            String serieNameRight = serieRight.getName().toLowerCase();
+
+            result = serieNameLeft.compareTo(serieNameRight);
+        }
+
+        if(0 == result) {
+            double bookNumberLeft = left.getBookNumber();
+            double bookNumberRight = right.getBookNumber();
+
+            if (bookNumberLeft == -1 && bookNumberRight == -1) {
+                result = 0;
+            } else if (bookNumberLeft == -1) {
+                result = -1;
+            } else if (bookNumberRight == -1) {
+                result = 1;
+            } else {
+                result = Double.compare(bookNumberLeft, bookNumberRight);
+            }
+        }
+
+        if (0 == result) {
+            result = backup_compare(left, right);
+        }
+
+        return result;
+    }
+
+    private int compare_rating(Book left, Book right) {
+        float ratingLeft = left.getRating();
+        float ratingright = right.getRating();
+
+        int result;
+        if (ratingLeft == ratingright) {
+            result = backup_compare(left, right);
+        }
+        else if (ratingLeft > ratingright) {
+            result = 1;
+        }
+        else {
+            result = -1;
+        }
+
+        return result;
+    }
+
+    private int backup_compare(Book lhs, Book rhs) {
+        Book left = lhs;
+        Book right = rhs;
+
+        if (SortOrder.DECREASE == mSortOrder) {
+            left = rhs;
+            right = lhs;
+        }
+
+        String titleLeft = left.getTitle().toLowerCase();
+        String titleRight = right.getTitle().toLowerCase();
+        return titleLeft.compareTo(titleRight);
     }
 }
