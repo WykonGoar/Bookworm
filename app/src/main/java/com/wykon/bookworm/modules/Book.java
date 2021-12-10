@@ -177,12 +177,19 @@ public class Book implements Comparable{
     }
 
     public void delete(DatabaseConnection databaseConnection) {
-        SQLiteStatement statement = databaseConnection.getNewStatement(
-                "DELETE FROM books WHERE _id = ? AND is_wish = 1;"
-        );
-        statement.bindDouble(1, mId);
 
-        databaseConnection.executeUpdateQuery(statement);
+        SQLiteStatement genre_statement = databaseConnection.getNewStatement(
+                "DELETE FROM books_genres WHERE book_id = ?;"
+        );
+        genre_statement.bindDouble(1, mId);
+        databaseConnection.executeUpdateQuery(genre_statement);
+
+        SQLiteStatement book_statement = databaseConnection.getNewStatement(
+                "DELETE FROM books WHERE _id = ?;"
+        );
+        book_statement.bindDouble(1, mId);
+
+        databaseConnection.executeUpdateQuery(book_statement);
     }
 
     private void insertBook(DatabaseConnection databaseConnection) {
