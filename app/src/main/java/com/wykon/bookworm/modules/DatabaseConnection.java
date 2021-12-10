@@ -228,7 +228,7 @@ public class DatabaseConnection extends Activity {
     public Boolean isGenreUsed(int genreId) {
         Cursor mCursor = null;
         try {
-            mCursor = executeReturn(String.format("SELECT COUNT(_id) AS count FROM books where genre = %d;", genreId));
+            mCursor = executeReturn(String.format("SELECT COUNT(*) AS count FROM books_genres WHERE genre_id = %d;", genreId));
         } catch (SQLiteException e) {
             e.printStackTrace();
             return false;
